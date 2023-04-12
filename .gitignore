@@ -1,1 +1,7 @@
-*.exe
+*.*
+Cargo.*
+target/
+
+!*.py
+!*.rs
+!*.cpp

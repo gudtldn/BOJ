@@ -45,7 +45,7 @@ def main():
                     open(f"./boj_{n}.py", "w", encoding="utf-8").close()
 
                 case Languages.Rust:
-                    system(f"cargo new boj_{n}")
+                    system(f"cargo new boj_{n} --vcs none")
                 
                 case Languages.Cpp:
                     open(f"./boj_{n}.cpp", "w", encoding="utf-8").close()
