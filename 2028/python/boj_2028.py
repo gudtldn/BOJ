@@ -1,0 +1,1 @@
+print(*["YNEOS"[int(not str(int(n := input())**2).endswith(n))::2] for _ in range(int(input()))], sep="\n")
