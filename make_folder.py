@@ -38,7 +38,7 @@ def main():
         if lang.name.lower() in listdir(f"./{n}"):
             print(f"이미 {lang.name.lower()} 폴더가 존재합니다.")
             continue
-        
+
         mkdir(f"./{n}/{lang.name.lower()}")
         with ChangeDir(f"./{n}/{lang.name.lower()}"):
             match lang:
@@ -62,7 +62,7 @@ def question_number() -> str:
         n = input("문제 번호를 입력해 주세요: ")
         if n.isnumeric():
             return n
-        
+
         print("다시 입력해 주세요.\n")
 
 
