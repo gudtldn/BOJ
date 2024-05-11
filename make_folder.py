@@ -18,6 +18,7 @@ class Languages(Enum):
     Cpp = auto()
     Python = auto()
     Rust = auto()
+    Kotlin = auto()
 
     @classmethod
     def all(cls) -> list[Enum]:
@@ -46,9 +47,12 @@ def main():
 
                 case Languages.Rust:
                     system(f"cargo new boj_{n} --vcs none")
-                
+
                 case Languages.Cpp:
                     open(f"./boj_{n}.cpp", "w", encoding="utf-8").close()
+
+                case Languages.Kotlin:
+                    open(f"./boj_{n}.kt", "w", encoding="utf-8").close()
 
     startfile(f"{getcwd()}\\{n}")
 
