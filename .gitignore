@@ -5,4 +5,5 @@ target/
 !*.rs
 !*.cpp
 !*.kt
+!*.asm
 !Cargo.*
