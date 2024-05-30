@@ -69,10 +69,12 @@ def main():
                     system(f"cargo new boj_{n} --vcs none")
 
                 case Languages.Cpp:
-                    with open(f"./boj_{n}.cpp", "w", encoding="utf-8") as cpp,    \
-                         open("./run.bat", "w", encoding="utf-8") as run_bat,     \
-                         open("./debug.bat", "w", encoding="utf-8") as debug_bat, \
-                         open("./debug.gdb", "w", encoding="utf-8") as debug_gdb:
+                    with (
+                        open(f"./boj_{n}.cpp", "w", encoding="utf-8") as cpp,
+                        open("./run.bat", "w", encoding="utf-8") as run_bat,
+                        open("./debug.bat", "w", encoding="utf-8") as debug_bat,
+                        open("./debug.gdb", "w", encoding="utf-8") as debug_gdb
+                    ):
                         cpp.write(
                             "#include <iostream>\n\n"
                             "#define dbg$(x) (printf(\"[%s:%d] %s = %d\\n\", __FILE__, __LINE__, #x, (x)), x)\n\n"
