@@ -76,6 +76,7 @@ def main():
                         open("./debug.gdb", "w", encoding="utf-8") as debug_gdb
                     ):
                         cpp.write(
+                            f"// https://www.acmicpc.net/problem/{n}\n"
                             "#include <iostream>\n\n"
                             "#define dbg$(x) (printf(\"[%s:%d] %s = %d\\n\", __FILE__, __LINE__, #x, (x)), x)\n\n"
                             "using namespace std;\n\n"
@@ -99,7 +100,20 @@ def main():
                         )
 
                 case Languages.Kotlin:
-                    open(f"./boj_{n}.kt", "w", encoding="utf-8").close()
+                    with (
+                        open(f"./boj_{n}.kt", "w", encoding="utf-8") as kt,
+                        open("./run.bat", "w", encoding="utf-8") as run_bat,
+                    ):
+                        kt.write(
+                            f"// https://www.acmicpc.net/problem/{n}\n"
+                            "fun main() {\n\n"
+                            "}\n"
+                        )
+                        run_bat.write(
+                            "@echo off\n"
+                            f"kotlinc boj_{n}.kt -include-runtime -d boj_{n}.jar\n"
+                            f"java -jar boj_{n}.jar\n"
+                        )
 
     # startfile(f"{getcwd()}\\{n}")
     system(f"code {getcwd()}\\{n}")
