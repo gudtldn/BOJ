@@ -90,12 +90,14 @@ def main():
                         run_bat.write(
                             "@echo off\n"
                             f"g++ -std=c++20 -o boj_{n} boj_{n}.cpp\n"
+                            "IF %ERRORLEVEL% NEQ 0 EXIT\n"
                             f"boj_{n}.exe\n"
                         )
                         debug_gdb.write("r\nq\n")
                         debug_bat.write(
                             "@echo off\n"
                             f"g++ -std=c++20 -g -o boj_{n} boj_{n}.cpp\n"
+                            "IF %ERRORLEVEL% NEQ 0 EXIT\n"
                             f"gdb -q -x debug.gdb boj_{n}.exe\n"
                         )
 
@@ -112,6 +114,7 @@ def main():
                         run_bat.write(
                             "@echo off\n"
                             f"kotlinc boj_{n}.kt -include-runtime -d boj_{n}.jar\n"
+                            "IF %ERRORLEVEL% NEQ 0 EXIT\n"
                             f"java -jar boj_{n}.jar\n"
                         )
 
