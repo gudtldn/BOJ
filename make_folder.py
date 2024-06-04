@@ -76,7 +76,7 @@ def main():
                         open("./debug.gdb", "w", encoding="utf-8") as debug_gdb
                     ):
                         cpp.write(
-                            f"// https://www.acmicpc.net/problem/{n}\n"
+                            f"// https://www.acmicpc.net/problem/{n}\n\n"
                             "#include <iostream>\n\n"
                             "#define dbg$(x) (printf(\"[%s:%d] %s = %d\\n\", __FILE__, __LINE__, #x, (x)), x)\n\n"
                             "using namespace std;\n\n"
@@ -107,7 +107,7 @@ def main():
                         open("./run.bat", "w", encoding="utf-8") as run_bat,
                     ):
                         kt.write(
-                            f"// https://www.acmicpc.net/problem/{n}\n"
+                            f"// https://www.acmicpc.net/problem/{n}\n\n"
                             "fun main() {\n\n"
                             "}\n"
                         )
