@@ -3,7 +3,6 @@
 import sys
 from collections import defaultdict
 from dataclasses import dataclass
-from decimal import Decimal, ROUND_DOWN
 
 class StockMarket:
     def __init__(self):
