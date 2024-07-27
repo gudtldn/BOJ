@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from os import mkdir, listdir, chdir, getcwd, system, startfile
+from os import mkdir, listdir, chdir, getcwd, system
 
 
 class ChangeDir():
@@ -63,7 +63,8 @@ def main():
         with ChangeDir(f"./{n}/{lang.name.lower()}"):
             match lang:
                 case Languages.Python:
-                    open(f"./boj_{n}.py", "w", encoding="utf-8").close()
+                    with open(f"./boj_{n}.py", "w", encoding="utf-8") as fw:
+                        fw.write(f"# https://www.acmicpc.net/problem/{n}\n\n")
 
                 case Languages.Rust:
                     system(f"cargo new boj_{n} --vcs none")
