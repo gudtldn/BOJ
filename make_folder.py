@@ -90,6 +90,7 @@ def main():
                             "from typing import TextIO\n\n"
                             "def solution(stdin: TextIO) -> str:\n"
                             "    stdin = iter(stdin.read().split(\"\\n\"))\n"
+                            "    next = stdin.__next__\n"
                             "    result = []\n\n\n\n"
                             "    return \"\\n\".join(result)\n\n"
                             "if __name__ == \"__main__\":\n"
