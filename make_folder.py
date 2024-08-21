@@ -85,8 +85,9 @@ def main():
                         open(f"./boj_{n}.py", "w", encoding="utf-8") as py,
                         open(f"./boj_{n}_test.py", "w", encoding="utf-8") as test_py
                     ):
+                        # 아래와 같이 test코드와 호환해서 사용하면, 속도가 4배 느려짐
                         py.write(
-                            f"# https://www.acmicpc.net/problem/{n}\n\n"
+                            f"# https://www.acmicpc.net/problem/{n}\n"
                             "from typing import TextIO\n\n"
                             "def solution(stdin: TextIO) -> str:\n"
                             "    stdin = iter(stdin.read().split(\"\\n\"))\n"
