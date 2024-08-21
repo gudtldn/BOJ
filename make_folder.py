@@ -54,21 +54,6 @@ def main():
     if n not in listdir("./"):
         mkdir(f"./{n}")
 
-    with open(f"./{n}/.vscode/settings.json", "w", encoding="utf-8") as settings:
-        settings.write(
-            "{\n"
-            "    \"python.testing.unittestArgs\": [\n"
-            "        \"-v\",\n"
-            "        \"-s\",\n"
-            "        \"./python\",\n"
-            "        \"-p\",\n"
-            "        \"*_test.py\"\n"
-            "    ],\n"
-            "    \"python.testing.pytestEnabled\": false,\n"
-            "    \"python.testing.unittestEnabled\": true\n"
-            "}\n"
-        )
-
     for lang in langs:
         if lang.name.lower() in listdir(f"./{n}"):
             print(f"이미 {lang.name.lower()} 폴더가 존재합니다.")
@@ -78,8 +63,23 @@ def main():
         with ChangeDir(f"./{n}/{lang.name.lower()}"):
             match lang:
                 case Languages.Python:
-                    if ".vscode" not in listdir(f"./{n}"):
-                        mkdir(f"./{n}/.vscode")
+                    if ".vscode" not in listdir(f"../"):
+                        mkdir(f"../.vscode")
+
+                    with open(f"../.vscode/settings.json", "w", encoding="utf-8") as settings:
+                        settings.write(
+                            "{\n"
+                            "    \"python.testing.unittestArgs\": [\n"
+                            "        \"-v\",\n"
+                            "        \"-s\",\n"
+                            "        \"./python\",\n"
+                            "        \"-p\",\n"
+                            "        \"*_test.py\"\n"
+                            "    ],\n"
+                            "    \"python.testing.pytestEnabled\": false,\n"
+                            "    \"python.testing.unittestEnabled\": true\n"
+                            "}\n"
+                        )
 
                     with (
                         open(f"./boj_{n}.py", "w", encoding="utf-8") as py,
