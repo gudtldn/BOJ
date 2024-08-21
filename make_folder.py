@@ -54,6 +54,21 @@ def main():
     if n not in listdir("./"):
         mkdir(f"./{n}")
 
+    with open(f"./{n}/.vscode/settings.json", "w", encoding="utf-8") as settings:
+        settings.write(
+            "{\n"
+            "    \"python.testing.unittestArgs\": [\n"
+            "        \"-v\",\n"
+            "        \"-s\",\n"
+            "        \"./python\",\n"
+            "        \"-p\",\n"
+            "        \"*_test.py\"\n"
+            "    ],\n"
+            "    \"python.testing.pytestEnabled\": false,\n"
+            "    \"python.testing.unittestEnabled\": true\n"
+            "}\n"
+        )
+
     for lang in langs:
         if lang.name.lower() in listdir(f"./{n}"):
             print(f"이미 {lang.name.lower()} 폴더가 존재합니다.")
@@ -63,11 +78,65 @@ def main():
         with ChangeDir(f"./{n}/{lang.name.lower()}"):
             match lang:
                 case Languages.Python:
-                    with open(f"./boj_{n}.py", "w", encoding="utf-8") as fw:
-                        fw.write(f"# https://www.acmicpc.net/problem/{n}\n\n")
+                    if ".vscode" not in listdir(f"./{n}"):
+                        mkdir(f"./{n}/.vscode")
+
+                    with (
+                        open(f"./boj_{n}.py", "w", encoding="utf-8") as py,
+                        open(f"./boj_{n}_test.py", "w", encoding="utf-8") as test_py
+                    ):
+                        py.write(
+                            f"# https://www.acmicpc.net/problem/{n}\n\n"
+                            "from typing import TextIO\n\n"
+                            "def solution(stdin: TextIO) -> str:\n"
+                            "    stdin = iter(stdin.read().split(\"\\n\"))\n"
+                            "    result = []\n\n\n\n"
+                            "    return \"\\n\".join(result)\n\n"
+                            "if __name__ == \"__main__\":\n"
+                            "    print(solution(open(0)))\n"
+                        )
+                        test_py.write(
+                            f"from boj_{n} import solution\n"
+                            "from io import StringIO\n"
+                            "from unittest import TestCase, main\n\n"
+                            "class Test(TestCase):\n"
+                            "    def test_solution1(self) -> None:\n"
+                            "        buffer = StringIO()\n"
+                            "        self.assertEqual(solution(buffer), ...)\n"
+                            "    # add more tests\n\n"
+                            "if __name__ == \"__main__\":\n"
+                            "    main()\n"
+                        )
 
                 case Languages.Rust:
                     system(f"cargo new boj_{n} --vcs none")
+                    with open(f"./boj_{n}/src/main.rs", "w", encoding="utf-8") as rs:
+                        rs.write(
+                            f"// https://www.acmicpc.net/problem/{n}\n\n"
+                            "fn solution(stdin: &str) -> String {\n"
+                            "    let mut tokens = stdin.split('\\n');\n"
+                            "    let mut next = || tokens.next().unwrap();\n"
+                            "    let mut buffer = Vec::<String>::new();\n\n\n\n"
+                            "    buffer.join(\"\\n\")\n"
+                            "}\n\n"
+                            "#[cfg(test)]\n"
+                            "mod tests {\n"
+                            "    use super::*;\n\n"
+                            "    #[test]\n"
+                            "    fn test_solution1() {\n"
+                            "        assert_eq!(solution(/* input */), /* expected */);\n"
+                            "    }\n"
+                            "    /* add more tests */\n"
+                            "}\n\n"
+                            "fn main() {\n"
+                            "    use std::io::*;\n"
+                            "    println!(\"{}\", solution(&read_to_string(stdin()).unwrap()));\n"
+                            "    STDOUT.with(|refcell| std::io::Write::flush(&mut *refcell.borrow_mut()).unwrap());\n"
+                            "}\n\n"
+                            "thread_local! {\n"
+                            "    static STDOUT: std::cell::RefCell<std::io::BufWriter<std::io::StdoutLock<'static>>> = std::cell::RefCell::new(std::io::BufWriter::with_capacity(1 << 17, std::io::stdout().lock()));\n"
+                            "}\n"
+                        )
 
                 case Languages.Cpp:
                     with (
@@ -121,7 +190,6 @@ def main():
 
     # startfile(f"{getcwd()}\\{n}")
     system(f"code {getcwd()}\\{n}")
-
 
 if __name__ == "__main__":
     main()
