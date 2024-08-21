@@ -92,7 +92,7 @@ def main():
                             "    stdin = iter(stdin.read().split(\"\\n\"))\n"
                             "    next = stdin.__next__\n"
                             "    result = []\n\n\n\n"
-                            "    return \"\\n\".join(result)\n\n"
+                            "    return \"\\n\".join(map(str, result))\n\n"
                             "if __name__ == \"__main__\":\n"
                             "    print(solution(open(0)))\n"
                         )
