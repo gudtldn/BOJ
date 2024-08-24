@@ -89,8 +89,8 @@ def main():
                         py.write(
                             f"# https://www.acmicpc.net/problem/{n}\n\n"
                             "def solution(stdin: str) -> str:\n"
-                            "    stdin = iter(stdin.split(\"\\n\"))\n"
-                            "    next = stdin.__next__\n"
+                            "    it = iter(stdin.split(\"\\n\"))\n"
+                            "    next = it.__next__\n"
                             "    result = []\n\n\n\n"
                             "    return \"\\n\".join(map(str, result))\n\n"
                             "if __name__ == \"__main__\":\n"
