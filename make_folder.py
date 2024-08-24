@@ -99,6 +99,7 @@ def main():
                         """).lstrip())
                         test_py.write(textwrap.dedent(f"""
                             # https://www.acmicpc.net/problem/{n}
+                            import sys
                             from io import StringIO
                             from unittest import TestCase, main
                             from boj_{n} import solution
@@ -110,10 +111,10 @@ def main():
                                         StringIO(input_str) as fake_input,
                                         StringIO() as fake_output
                                     ):
-                                        original_output = __import__("sys").stdout
-                                        __import__("sys").stdout = fake_output
+                                        original_output = sys.stdout
+                                        sys.stdout = fake_output
                                         solution(iter(fake_input.read().splitlines()).__next__)
-                                        __import__("sys").stdout = original_output
+                                        sys.stdout = original_output
                                         return fake_output.getvalue().strip()
 
                                 def test_solution1(self) -> None:
