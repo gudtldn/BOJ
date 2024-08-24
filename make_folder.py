@@ -1,3 +1,4 @@
+import textwrap
 from enum import Enum, auto
 from os import mkdir, listdir, chdir, getcwd, system
 
@@ -67,44 +68,60 @@ def main():
                         mkdir(f"../.vscode")
 
                     with open(f"../.vscode/settings.json", "w", encoding="utf-8") as settings:
-                        settings.write(
-                            "{\n"
-                            "    \"python.testing.unittestArgs\": [\n"
-                            "        \"-v\",\n"
-                            "        \"-s\",\n"
-                            "        \"./python\",\n"
-                            "        \"-p\",\n"
-                            "        \"*_test.py\"\n"
-                            "    ],\n"
-                            "    \"python.testing.pytestEnabled\": false,\n"
-                            "    \"python.testing.unittestEnabled\": true\n"
-                            "}\n"
-                        )
+                        settings.write(textwrap.dedent("""
+                            {
+                                "python.testing.unittestArgs": [
+                                    "-v",
+                                    "-s",
+                                    "./python",
+                                    "-p",
+                                    "*_test.py"
+                                ],
+                                "python.testing.pytestEnabled": false,
+                                "python.testing.unittestEnabled": true
+                            }
+                        """).lstrip())
 
                     with (
                         open(f"./boj_{n}.py", "w", encoding="utf-8") as py,
                         open(f"./boj_{n}_test.py", "w", encoding="utf-8") as test_py
                     ):
-                        # 아래와 같이 test코드와 호환해서 사용하면, 속도가 약 4배 느려짐
-                        py.write(
-                            f"# https://www.acmicpc.net/problem/{n}\n\n"
-                            "def solution(stdin: str) -> str:\n"
-                            "    it = iter(stdin.split(\"\\n\"))\n"
-                            "    next = it.__next__\n"
-                            "    result = []\n\n\n\n"
-                            "    return \"\\n\".join(map(str, result))\n\n"
-                            "if __name__ == \"__main__\":\n"
-                            "    print(solution(open(0).read()))\n"
-                        )
-                        test_py.write(
-                            "from unittest import TestCase, main\n"
-                            f"from boj_{n} import solution\n\n"
-                            "class Test(TestCase):\n"
-                            "    def test_solution1(self) -> None:\n"
-                            "        self.assertEqual(solution(...), ...)\n\n"
-                            "if __name__ == \"__main__\":\n"
-                            "    main()\n"
-                        )
+                        # 아래와 같이 test코드와 호환해서 사용하면, 속도가 좀 느려짐
+                        py.write(textwrap.dedent(f"""
+                            # https://www.acmicpc.net/problem/{n}
+                            from typing import Callable
+                            
+                            def solution(next: Callable[[], str]) -> None:
+                                ...
+
+                            if __name__ == "__main__":
+                                solution(iter(open(0).read().splitlines()).__next__)
+                        """).lstrip())
+                        test_py.write(textwrap.dedent(f"""
+                            # https://www.acmicpc.net/problem/{n}
+                            from io import StringIO
+                            from unittest import TestCase, main
+                            from boj_{n} import solution
+
+                            class Test(TestCase):
+                                @staticmethod
+                                def run_solution(input_str: str) -> str:
+                                    with (
+                                        StringIO(input_str) as fake_input,
+                                        StringIO() as fake_output
+                                    ):
+                                        original_output = __import__("sys").stdout
+                                        __import__("sys").stdout = fake_output
+                                        solution(iter(fake_input.read().splitlines()).__next__)
+                                        __import__("sys").stdout = original_output
+                                        return fake_output.getvalue().strip()
+
+                                def test_solution1(self) -> None:
+                                    self.assertEqual(Test.run_solution(...), ...)
+
+                            if __name__ == "__main__":
+                                main()
+                        """).lstrip())
 
                 case Languages.Rust:
                     system(f"cargo new boj_{n} --vcs none")
