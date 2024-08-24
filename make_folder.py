@@ -91,14 +91,13 @@ def main():
                             # https://www.acmicpc.net/problem/{n}
                             from typing import Callable
                             
-                            def solution(next: Callable[[], str]) -> None:
+                            def solution(it_next: Callable[[], str]):
                                 ...
 
                             if __name__ == "__main__":
                                 solution(iter(open(0).read().splitlines()).__next__)
                         """).lstrip())
                         test_py.write(textwrap.dedent(f"""
-                            # https://www.acmicpc.net/problem/{n}
                             import sys
                             from io import StringIO
                             from unittest import TestCase, main
