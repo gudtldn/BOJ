@@ -207,7 +207,7 @@ def main():
                         cpp.write(textwrap.dedent(f"""
                             // https://www.acmicpc.net/problem/{n}
                             #include <iostream>
-                            #define FASTIO cin.tie(nullptr); cout.tie(nullptr); ios::sync_with_stdio(false);
+                            #define FASTIO std::cin.tie(nullptr); std::cout.tie(nullptr); std::ios::sync_with_stdio(false);
 
                             int main() {{
                                 using namespace std;
