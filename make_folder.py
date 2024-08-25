@@ -124,37 +124,74 @@ def main():
                         """).lstrip())
 
                 case Languages.Rust:
+                    # lib.rs 파일을 만들어서 테스트 코드를 작성하면 좋을 것 같음
                     system(f"cargo new boj_{n} --vcs none")
                     with open(f"./boj_{n}/src/main.rs", "w", encoding="utf-8") as rs:
                         rs.write(textwrap.dedent(f"""
                             // https://www.acmicpc.net/problem/{n}
-                            fn solution(stdin: &str) -> String {{
+
+                            fn solution(stdin: &str) {{
                                 let mut tokens = stdin.split('\\n');
                                 let mut next = || tokens.next().unwrap();
-                                let mut buffer = Vec::<String>::new();
-                                buffer.join("\\n")
+
+                                todo!("solve here");
                             }}
 
-                            #[cfg(test)]
-                            mod tests {{
-                                use super::*;
-
-                                #[test]
-                                fn test_solution1() {{
-                                    assert_eq!(solution(/* input */), /* expected */);
-                                }}
+                        #[cfg(test)]
+                        mod tests {{
+                            use super::*;
+                            fn capture_output(f: impl FnOnce()) -> String {{
+                                STDOUT.with(|stdout| {{
+                                    stdout.borrow_mut().clear();
+                                }});
+                                f();
+                                STDOUT.with(|stdout| {{
+                                    String::from_utf8(stdout.borrow().to_vec()).unwrap()
+                                }})
                             }}
 
-                            fn main() {{
-                                use std::io::*;
-                                println!("{{}}", solution(&read_to_string(stdin()).unwrap()));
-                                STDOUT.with(|refcell| std::io::Write::flush(&mut *refcell.borrow_mut()).unwrap());
+                            #[test]
+                            fn test_solution1() {{
+                                assert_eq!(capture_output(|| solution(...)), ...);
                             }}
+                        }}
 
-                            thread_local! {{
-                                static STDOUT: std::cell::RefCell<std::io::BufWriter<std::io::StdoutLock<'static>>> =
-                                    std::cell::RefCell::new(std::io::BufWriter::with_capacity(1 << 17, std::io::stdout().lock()));
-                            }}
+                        fn main() {{
+                            use std::io::*;
+                            solution(&read_to_string(stdin()).unwrap());
+                            STDOUT.with(|refcell| std::io::Write::flush(&mut *refcell.borrow_mut()).unwrap());
+                        }}
+
+                        #[cfg(test)]
+                        thread_local! {{
+                            static STDOUT: std::cell::RefCell<Vec<u8>> = std::cell::RefCell::new(Vec::new());
+                        }}
+
+                        #[cfg(not(test))]
+                        thread_local! {{
+                            static STDOUT: std::cell::RefCell<std::io::BufWriter<std::io::StdoutLock<'static>>> =
+                            std::cell::RefCell::new(std::io::BufWriter::with_capacity(1 << 17, std::io::stdout().lock()));
+                        }}
+
+                        #[macro_export]
+                        macro_rules! println {{
+                            ($($t:tt)*) => {{
+                                STDOUT.with(|refcell| {{
+                                    use std::io::*;
+                                    writeln!(refcell.borrow_mut(), $($t)*).unwrap();
+                                }});
+                            }};
+                        }}
+
+                        #[macro_export]
+                        macro_rules! print {{
+                            ($($t:tt)*) => {{
+                                STDOUT.with(|refcell| {{
+                                    use std::io::*;
+                                    write!(refcell.borrow_mut(), $($t)*).unwrap();
+                                }});
+                            }};
+                        }}
                         """).lstrip())
 
                 case Languages.Cpp:
