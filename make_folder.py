@@ -209,7 +209,8 @@ def main():
                             #include <iostream>
                             #define FASTIO std::cin.tie(nullptr); std::cout.tie(nullptr); std::ios::sync_with_stdio(false);
 
-                            int main() {{
+                            int main()
+                            {{
                                 using namespace std;
                                 FASTIO
 
