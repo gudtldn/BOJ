@@ -20,6 +20,7 @@ class Languages(Enum):
     Python = auto()
     Rust = auto()
     Kotlin = auto()
+    x86_64_Assembly = auto()
 
     @classmethod
     def all(cls) -> list[Enum]:
@@ -249,6 +250,32 @@ def main():
                             kotlinc boj_{n}.kt -include-runtime -d boj_{n}.jar
                             IF %ERRORLEVEL% NEQ 0 EXIT
                             java -jar boj_{n}.jar
+                        """).lstrip())
+
+                case Languages.x86_64_Assembly:
+                    with open(f"./boj_{n}.asm", "w", encoding="utf-8") as asm:
+                        asm.write(textwrap.dedent(f"""
+                            ; https://www.acmicpc.net/problem/{n}
+                            section .data
+                                ; data here
+
+                            section .bss
+                                ; bss here
+
+                            section .text
+                                global main
+                                extern printf
+                                extern scanf
+
+                            main:
+                                push rbp
+                                mov rbp, rsp
+
+                                ; code here
+
+                                pop rbp
+                                xor rax, rax
+                                ret
                         """).lstrip())
 
     system(f"code {getcwd()}\\{n}")
