@@ -127,7 +127,15 @@ def main():
                 case Languages.Rust:
                     # lib.rs 파일을 만들어서 테스트 코드를 작성하면 좋을 것 같음
                     system(f"cargo new boj_{n} --vcs none")
-                    with open(f"./boj_{n}/src/main.rs", "w", encoding="utf-8") as rs:
+                    with (
+                        open(f"../Cargo.toml", "w", encoding="utf-8") as root_toml,
+                        open(f"./boj_{n}/src/main.rs", "w", encoding="utf-8") as rs
+                    ):
+                        root_toml.write(textwrap.dedent(f"""
+                            [workspace]
+                            members = ["rust/boj_{n}"]
+                            resolver = "2"
+                        """).lstrip())
                         rs.write(textwrap.dedent(f"""
                             // https://www.acmicpc.net/problem/{n}
 
@@ -137,6 +145,7 @@ def main():
 
                                 todo!("solve here");
                             }}
+
 
                             #[cfg(test)]
                             mod tests {{
