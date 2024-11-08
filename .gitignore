@@ -6,4 +6,4 @@ target/
 !*.cpp
 !*.kt
 !*.asm
-!Cargo.*
+!Cargo.toml
