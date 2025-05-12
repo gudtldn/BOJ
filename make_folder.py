@@ -65,10 +65,10 @@ def main():
         with ChangeDir(f"./{n}/{lang.name.lower()}"):
             match lang:
                 case Languages.Python:
-                    if ".vscode" not in listdir(f"../"):
-                        mkdir(f"../.vscode")
+                    if ".vscode" not in listdir("../"):
+                        mkdir("../.vscode")
 
-                    with open(f"../.vscode/settings.json", "w", encoding="utf-8") as settings:
+                    with open("../.vscode/settings.json", "w", encoding="utf-8") as settings:
                         settings.write(textwrap.dedent("""
                             {
                                 "python.testing.unittestArgs": [
@@ -128,7 +128,7 @@ def main():
                     # lib.rs 파일을 만들어서 테스트 코드를 작성하면 좋을 것 같음
                     system(f"cargo new boj_{n} --vcs none")
                     with (
-                        open(f"../Cargo.toml", "w", encoding="utf-8") as root_toml,
+                        open("../Cargo.toml", "w", encoding="utf-8") as root_toml,
                         open(f"./boj_{n}/src/main.rs", "w", encoding="utf-8") as rs
                     ):
                         root_toml.write(textwrap.dedent(f"""
