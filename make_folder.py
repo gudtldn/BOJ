@@ -143,6 +143,15 @@ def main():
                                 let mut tokens = stdin.split('\\n');
                                 let mut next = || tokens.next().unwrap();
 
+                                macro_rules! parse_line {{
+                                    ($($to_type:ty),*) => {{
+                                        {{
+                                            let mut iter = next().split_whitespace();
+                                            ($(iter.next().unwrap().parse::<$to_type>().unwrap()),*)
+                                        }}
+                                    }};
+                                }}
+
                                 todo!("solve here");
                             }}
 
