@@ -174,7 +174,10 @@ def main():
 
                                 #[test]
                                 fn test_solution1() {{
-                                    assert_eq!(capture_output(|| solution(...)), ...);
+                                    assert_eq!(
+                                        capture_output(|| solution(...)),
+                                        ...
+                                    );
                                 }}
                             }}
 
