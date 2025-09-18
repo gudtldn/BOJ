@@ -184,13 +184,11 @@ def main():
                                 STDOUT.with(|refcell| std::io::Write::flush(&mut *refcell.borrow_mut()).unwrap());
                             }}
 
-                            #[cfg(test)]
                             thread_local! {{
+                                #[cfg(test)]
                                 static STDOUT: std::cell::RefCell<Vec<u8>> = std::cell::RefCell::new(Vec::new());
-                            }}
 
-                            #[cfg(not(test))]
-                            thread_local! {{
+                                #[cfg(not(test))]
                                 static STDOUT: std::cell::RefCell<std::io::BufWriter<std::io::StdoutLock<'static>>> =
                                     std::cell::RefCell::new(std::io::BufWriter::with_capacity(1 << 17, std::io::stdout().lock()));
                             }}
