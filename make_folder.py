@@ -37,12 +37,12 @@ def question_number() -> str:
 
 
 def selected_langs() -> list[Languages]:
-    print(*[f"{n}. {lang}" for n, lang in [(l.value, l.name) for l in Languages.all()]], sep="\n")
+    print(*[f"{lang.value}. {lang.name}" for lang in Languages.all()], sep="\n")
     while True:
-        lang = list(input("언어를 선택해 주세요: ").replace(" ", ""))
+        langs = list(input("언어를 선택해 주세요: ").replace(" ", ""))
 
-        if all(l.isnumeric() for l in lang):
-            return [l for l in Languages.all() if l.value in map(int, lang)]
+        if all(lang.isnumeric() for lang in langs):
+            return [lang for lang in Languages.all() if lang.value in map(int, langs)]
 
         print("다시 입력해 주세요.\n")
 
@@ -225,15 +225,24 @@ def main():
                     ):
                         cpp.write(textwrap.dedent(f"""
                             // https://www.acmicpc.net/problem/{n}
+
                             #include <iostream>
-                            #define FASTIO std::cin.tie(nullptr); std::cout.tie(nullptr); std::ios::sync_with_stdio(false);
+
+
+                            void solution()
+                            {{
+                                using namespace std;
+
+                                // code here
+                            }}
 
                             int main()
                             {{
-                                using namespace std;
-                                FASTIO
+                                std::cin.tie(nullptr);
+                                std::cout.tie(nullptr);
+                                std::ios::sync_with_stdio(false);
 
-                                // code here
+                                solution();
 
                                 return 0;
                             }}
