@@ -378,6 +378,7 @@ def main():
                         open("./debug.gdb", "w", encoding="utf-8") as debug_gdb
                     ):
                         cpp.write(textwrap.dedent(f"""
+                            // {problem.title}
                             // https://www.acmicpc.net/problem/{n}
 
                             #include <iostream>
@@ -421,7 +422,9 @@ def main():
                         open("./run.bat", "w", encoding="utf-8") as run_bat,
                     ):
                         kt.write(textwrap.dedent(f"""
+                            // {problem.title}
                             // https://www.acmicpc.net/problem/{n}
+
                             fun main() {{
                                 // code here
                             }}
@@ -436,7 +439,9 @@ def main():
                 case Languages.x86_64_Assembly:
                     with open(f"./boj_{n}.asm", "w", encoding="utf-8") as asm:
                         asm.write(textwrap.dedent(f"""
+                            ; {problem.title}
                             ; https://www.acmicpc.net/problem/{n}
+
                             section .data
                                 ; data here
 
