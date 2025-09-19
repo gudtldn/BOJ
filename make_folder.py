@@ -1,6 +1,38 @@
+import re
 import textwrap
-from enum import Enum, auto
 from os import mkdir, listdir, chdir, getcwd, system
+from enum import Enum, auto
+from datetime import timedelta
+from dataclasses import dataclass
+
+from requests import get
+from bs4 import BeautifulSoup
+
+
+@dataclass(frozen=True)
+class ProblemExample:
+    input: str
+    output: str
+
+@dataclass(frozen=True)
+class Problem:
+    problem_id: int                 # 문제 번호
+    title: str                      # 문제 제목
+    time_limit: timedelta           # 제한 시간
+    time_limit_detail: str | None   # 언어별 제한 시간 상세
+
+    memory_limit: int               # 제한 메모리 (MB)
+    memory_limit_detail: str | None # 언어별 제한 메모리 상세
+
+    desc: str                       # 문제 설명
+    input_desc: str                 # 입력 설명
+    output_desc: str                # 출력 설명
+    constraints: str                # 제약 사항
+
+    examples: list[ProblemExample]  # 예제 입력/출력 쌍
+    hints: str                      # 힌트
+
+    source: str                     # 출처
 
 
 class ChangeDir():
@@ -27,6 +59,90 @@ class Languages(Enum):
         return [*cls]
 
 
+def get_problem(problem_id: int) -> Problem:
+    """
+    문제 ID를 받아 해당 문제의 정보를 크롤링하고 파싱하여 Problem 객체를 반환합니다.
+    """
+    url = f"https://www.acmicpc.net/problem/{problem_id}"
+    response = get(
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
+            "Referer": "https://www.acmicpc.net/",
+        }
+    )
+
+    try:
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "lxml")
+
+        title: str = soup.select_one("#problem_title").text.strip()
+
+        info_table = soup.select_one("#problem-info")
+        time_limit_str: str = info_table.select_one("tr:nth-child(1) > td:nth-child(1)").text
+        memory_limit_str: str = info_table.select_one("tr:nth-child(1) > td:nth-child(2)").text
+
+        time_limit_sec = int(re.search(r"(\d+)", time_limit_str).group(1))
+        time_limit = timedelta(seconds=time_limit_sec)
+
+        specific_time_limit_elem = soup.select_one("#problem-time-limit > ul")
+        time_limit_detail = None
+        if specific_time_limit_elem:
+            time_limit_detail = specific_time_limit_elem.get_text(separator="\n", strip=True)
+        
+        memory_limit = int(re.search(r"(\d+)", memory_limit_str).group(1))
+
+        # 언어별 메모리 제한이 있는 경우, memory_limit_str을 덮어쓴다.
+        specific_memory_limit_elem = soup.select_one("#problem-memory-limit > ul")
+        memory_limit_detail = None
+        if specific_memory_limit_elem:
+            memory_limit_detail = specific_memory_limit_elem.get_text(separator="\n", strip=True)
+
+        desc = soup.select_one("#problem_description").get_text(separator="\n", strip=True)
+        input_desc = soup.select_one("#problem_input").get_text(separator="\n", strip=True)
+        output_desc = soup.select_one("#problem_output").get_text(separator="\n", strip=True)
+        
+        constraints_elem = soup.select_one("#problem_limit")
+        constraints = constraints_elem.get_text(separator="\n", strip=True) if constraints_elem else ""
+
+        example_inputs = soup.select('pre[id^="sample-input-"]')
+        example_outputs = soup.select('pre[id^="sample-output-"]')
+
+        examples = []
+        for i in range(len(example_inputs)):
+            input_text = example_inputs[i].get_text(strip=True).replace('\r\n', '\n').replace('\r', '\n')
+            output_text = example_outputs[i].get_text(strip=True).replace('\r\n', '\n').replace('\r', '\n')
+            examples.append(ProblemExample(input_text, output_text))
+
+        hints_elem = soup.select_one("#problem_hint")
+        hints = hints_elem.get_text(separator="\n", strip=True) if hints_elem else ""
+
+        source_ul = soup.select_one("#source > ul")
+        if source_ul:
+            source_lines = [li.get_text(strip=True) for li in source_ul.select("li")]
+            source = "\n".join(source_lines)
+        else:
+            source = ""
+
+        return Problem(
+            problem_id=problem_id,
+            title=title,
+            time_limit=time_limit,
+            time_limit_detail=time_limit_detail,
+            memory_limit=memory_limit,
+            memory_limit_detail=memory_limit_detail,
+            desc=desc,
+            input_desc=input_desc,
+            output_desc=output_desc,
+            constraints=constraints,
+            examples=examples,
+            hints=hints,
+            source=source,
+        )
+    except Exception as e:
+        print(f"문제 정보를 가져오는 중 오류가 발생했습니다: {e}")
+        raise
+
 def question_number() -> str:
     while True:
         n = input("문제 번호를 입력해 주세요: ")
@@ -52,6 +168,8 @@ def main():
     print()
     langs = selected_langs()
     print()
+
+    problem = get_problem(int(n))
 
     if n not in listdir("./"):
         mkdir(f"./{n}")
@@ -89,15 +207,36 @@ def main():
                     ):
                         # 아래와 같이 test코드와 호환해서 사용하면, 속도가 좀 느려짐
                         py.write(textwrap.dedent(f"""
+                            # {problem.title}
                             # https://www.acmicpc.net/problem/{n}
+
                             from typing import Callable
-                            
+
                             def solution(it_next: Callable[[], str]):
                                 ...
 
                             if __name__ == "__main__":
                                 solution(iter(open(0).read().splitlines()).__next__)
                         """).lstrip())
+
+                        tc_template = """
+                                def test_solution{n}(self) -> None:
+                                    self.assertEqual(
+                                        Test.run_solution("{input_str}"),
+                                        "{output_str}"
+                                    )
+                        """
+
+                        test_cases: list[str] = []
+                        for i, example in enumerate(problem.examples, start=1):
+                            test_cases.append(
+                                tc_template.format(
+                                    n=i,
+                                    input_str=example.input.replace('"""', r'\"\"\"').replace("\n", "\\n"),
+                                    output_str=example.output.replace('"""', r'\"\"\"').replace("\n", "\\n")
+                                )
+                            )
+
                         test_py.write(textwrap.dedent(f"""
                             import sys
                             from io import StringIO
@@ -108,17 +247,15 @@ def main():
                                 @staticmethod
                                 def run_solution(input_str: str) -> str:
                                     with (
-                                        StringIO(input_str) as fake_input,
-                                        StringIO() as fake_output
+                                        StringIO(input_str) as capture_input,
+                                        StringIO() as capture_output
                                     ):
                                         original_output = sys.stdout
-                                        sys.stdout = fake_output
-                                        solution(iter(fake_input.read().splitlines()).__next__)
+                                        sys.stdout = capture_output
+                                        solution(iter(capture_input.read().splitlines()).__next__)
                                         sys.stdout = original_output
-                                        return fake_output.getvalue().strip()
-
-                                def test_solution1(self) -> None:
-                                    self.assertEqual(Test.run_solution(...), ...)
+                                        return capture_output.getvalue().strip()
+                                {''.join(test_cases)}
 
                             if __name__ == "__main__":
                                 main()
@@ -136,7 +273,29 @@ def main():
                             members = ["rust/boj_{n}"]
                             resolver = "2"
                         """).lstrip())
+
+                        tc_template = """
+                                #[test]
+                                fn test_solution{n}() {{
+                                    assert_eq!(
+                                        capture_output(|| solution("{input_str}")),
+                                        "{output_str}"
+                                    );
+                                }}
+                        """
+
+                        test_cases: list[str] = []
+                        for i, example in enumerate(problem.examples, start=1):
+                            test_cases.append(
+                                tc_template.format(
+                                    n=i,
+                                    input_str=example.input.replace('"""', r'\"\"\"').replace("\n", "\\n"),
+                                    output_str=example.output.replace('"""', r'\"\"\"').replace("\n", "\\n")
+                                )
+                            )
+
                         rs.write(textwrap.dedent(f"""
+                            // {problem.title}
                             // https://www.acmicpc.net/problem/{n}
 
                             fn solution(stdin: &str) {{
@@ -172,14 +331,7 @@ def main():
                                             .to_string()
                                     }})
                                 }}
-
-                                #[test]
-                                fn test_solution1() {{
-                                    assert_eq!(
-                                        capture_output(|| solution(...)),
-                                        ...
-                                    );
-                                }}
+                                {''.join(test_cases)}
                             }}
 
                             fn main() {{
