@@ -143,6 +143,7 @@ def main():
                                 let mut tokens = stdin.split('\\n');
                                 let mut next = || tokens.next().unwrap();
 
+                                #[allow(unused_macros)]
                                 macro_rules! parse_line {{
                                     ($($to_type:ty),*) => {{
                                         {{
