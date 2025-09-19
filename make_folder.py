@@ -355,7 +355,7 @@ def main():
                                     STDOUT.with(|refcell| {{
                                         use std::io::*;
                                         writeln!(refcell.borrow_mut(), $($t)*).unwrap();
-                                    }});
+                                    }})
                                 }};
                             }}
 
@@ -365,7 +365,7 @@ def main():
                                     STDOUT.with(|refcell| {{
                                         use std::io::*;
                                         write!(refcell.borrow_mut(), $($t)*).unwrap();
-                                    }});
+                                    }})
                                 }};
                             }}
                         """).lstrip())
