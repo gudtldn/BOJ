@@ -1,0 +1,3 @@
+[workspace]
+members = ["rust/boj_2579"]
+resolver = "2"
