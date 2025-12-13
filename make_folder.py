@@ -299,7 +299,7 @@ def main():
                             // https://www.acmicpc.net/problem/{n}
 
                             fn solution(stdin: &str) {{
-                                let mut tokens = stdin.split('\\n');
+                                let mut tokens = stdin.split_ascii_whitespace();
                                 let mut next = || tokens.next().unwrap();
 
                                 #[allow(unused_macros)]
