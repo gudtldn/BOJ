@@ -2,22 +2,13 @@
 // https://www.acmicpc.net/problem/2579
 
 fn solution(stdin: &str) {
-    let mut tokens = stdin.split('\n');
-    let mut next = || tokens.next().unwrap();
-
-    #[allow(unused_macros)]
-    macro_rules! parse_line {
-        ($($to_type:ty),*) => {
-            {
-                let mut iter = next().split_whitespace();
-                ($(iter.next().unwrap().parse::<$to_type>().unwrap()),*)
-            }
-        };
-    }
+    let mut tokens = stdin.split_ascii_whitespace();
 
     // 계단 개수와 점수 입력
-    let n = parse_line!(usize);
-    let stairs = (0..n).map(|_| parse_line!(u32)).collect::<Vec<u32>>();
+    let n: usize = tokens.next().unwrap().parse().unwrap();
+    let stairs: Vec<u32> = tokens
+        .map(|token| token.parse().unwrap())
+        .collect();
 
     if n == 1 {
         println!("{}", stairs[0]);
