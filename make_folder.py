@@ -299,8 +299,8 @@ def main():
                             // https://www.acmicpc.net/problem/{n}
 
                             fn solution(stdin: &str) {{
-                                let mut tokens = stdin.lines();
-                                let mut next = || tokens.next().unwrap();
+                                let mut lines = stdin.lines();
+                                let mut next = || lines.next().unwrap();
 
                                 #[allow(unused_macros)]
                                 macro_rules! parse_line {{
