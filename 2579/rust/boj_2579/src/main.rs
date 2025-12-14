@@ -2,7 +2,7 @@
 // https://www.acmicpc.net/problem/2579
 
 fn solution(stdin: &str) {
-    let mut tokens = stdin.split_ascii_whitespace();
+    let mut tokens = stdin.lines();
 
     // 계단 개수와 점수 입력
     let n: usize = tokens.next().unwrap().parse().unwrap();
